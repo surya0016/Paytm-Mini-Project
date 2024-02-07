@@ -16,7 +16,8 @@ router.get("/balance", authMiddleware, async (req, res) => {
 });
 
 router.post("/transfer",authMiddleware,async(req,res)=>{
-    const session = await mongoose.startSession();
+    try {
+        const session = await mongoose.startSession();
 
     session.startTransaction();
     const {amount,to} = req.body;
@@ -27,6 +28,7 @@ router.post("/transfer",authMiddleware,async(req,res)=>{
     }).session(session)
 
     if(!reciever){
+        await session.abortTransaction()
         res.status(400).json({
             message:"Invalid Account"
         })
@@ -40,6 +42,7 @@ router.post("/transfer",authMiddleware,async(req,res)=>{
 
     //checking if sender has sufficient balance
     if(senderAccount.balance < amount || senderAccount.balance === 0){
+        await session.abortTransaction()
         res.json({
             message:"Insufficient balance",
         })
@@ -65,6 +68,11 @@ router.post("/transfer",authMiddleware,async(req,res)=>{
     res.json({
         message:"Transfer successful"
     })
+    } catch (error) {
+        await session.abortTransaction()
+        res.send(error)
+    }
+    
 })
 
 module.exports = router;
