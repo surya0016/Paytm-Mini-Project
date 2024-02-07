@@ -24,7 +24,7 @@ router.post("/transfer",authMiddleware,async(req,res)=>{
     
     const reciever = await Account.findOne({
         userId:to
-    })
+    }).session(session)
 
     if(!reciever){
         res.status(400).json({
@@ -36,7 +36,7 @@ router.post("/transfer",authMiddleware,async(req,res)=>{
     //Storing semder account details in reciever variable
     const senderAccount = await Account.findOne({
         userId:req.userId
-    })
+    }).session(session)
 
     //checking if sender has sufficient balance
     if(senderAccount.balance < amount || senderAccount.balance === 0){
@@ -52,7 +52,7 @@ router.post("/transfer",authMiddleware,async(req,res)=>{
         $inc:{
             balance: -amount
         }
-    })
+    }).session(session)
 
     await Account.updateOne({
         userId:to
@@ -60,7 +60,7 @@ router.post("/transfer",authMiddleware,async(req,res)=>{
         $inc:{
             balance: amount
         }
-    })
+    }).session(session)
     await session.commitTransaction();
     res.json({
         message:"Transfer successful"
