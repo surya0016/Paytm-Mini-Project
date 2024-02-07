@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const z = require('zod');
 const secret = require('../config')
 const jwt = require('jsonwebtoken');
-const {User} = require('../db/db');
+const {User, Account} = require('../db/db');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const zodSchema = z.object({
@@ -39,10 +39,6 @@ router.post("/signup" , async (req,res)=>{
     }else if(!response.success){
         return res.status(411).json({msg:"Invalid Input",res:response});
     }else{
-        const token = jwt.sign({
-            username
-        },secret)
-
         const salt = await bcrypt.genSalt(10)
         const hash = await bcrypt.hash(password, salt)
 
@@ -54,6 +50,18 @@ router.post("/signup" , async (req,res)=>{
         })
         user.save();
         const userId = user._id;
+///----------Create a new account--------->
+        await Account.create({
+            userId,
+            balance:1 + Math.random()*10000
+        })
+
+///--------------------------------------->
+
+        const token = jwt.sign({
+            userId
+        },secret)
+
         res.json({
             msg:"User created successfully !",
             token: token,
@@ -78,9 +86,12 @@ router.post("/signin",async(req,res)=>{
     }
 try {
     
-
+    
     const user = await User.findOne({
         username:req.body.username,
+    })
+    const account = await Account.findOne({
+        userId:user._id
     })
     // console.log(user);
     const isMatch = await bcrypt.compare(req.body.password, user.password)
@@ -95,11 +106,13 @@ try {
 
     res.json({
         token:token,
-        user:user
+        user:user,
+        account:account.balance
     })
 
     return
     }
+
 }} catch (error) {
     res.status(411).json({
         msg:"Error while logging in",
@@ -135,7 +148,7 @@ router.put("/",authMiddleware,async (req,res)=>{
 })
 
 router.get("/bulk",async (req,res)=>{
-    const filter = req.query.filter || " ";
+    const filter = req.query.filter || "";
 
     const users = await User.find({
         $or:[{                             //   $or is used for search two things at same time

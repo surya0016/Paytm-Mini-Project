@@ -16,6 +16,7 @@ function authMiddleware(req,res,next){
             res.json({msg:"You are not authenticated"})
         }else{
             req.userId = decoded.userId;
+            console.log("Authentication Success")
             next()
         }
     } catch (error) {
