@@ -7,12 +7,11 @@ function authMiddleware(req,res,next){
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(403).json({
             msg:"Authorization header not found",
-            auth:authHeader
         });
     }
-    console.log(authHeader)
+    
     const token = authHeader.split(' ')[1];
-    console.log(token);
+    
     try {
         const decoded = jwt.verify(token,secret)
         console.log(decoded)
