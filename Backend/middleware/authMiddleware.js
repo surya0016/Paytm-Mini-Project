@@ -2,17 +2,21 @@ const jwt = require('jsonwebtoken');
 const secret = require('../config');
 
 function authMiddleware(req,res,next){
-    const authHeader = req.body.authorization;
+    const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(403).json({});
+        return res.status(403).json({
+            msg:"Authorization header not found",
+            auth:authHeader
+        });
     }
-
+    console.log(authHeader)
     const token = authHeader.split(' ')[1];
-
+    console.log(token);
     try {
         const decoded = jwt.verify(token,secret)
-        if(!decoded.username){
+        console.log(decoded)
+        if(!decoded.userId){
             res.json({msg:"You are not authenticated"})
         }else{
             req.userId = decoded.userId;

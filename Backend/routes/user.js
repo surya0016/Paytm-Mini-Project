@@ -86,7 +86,7 @@ router.post("/signin",async(req,res)=>{
     }
 try {
     
-    
+    const test = await User ;
     const user = await User.findOne({
         username:req.body.username,
     })
@@ -107,7 +107,8 @@ try {
     res.json({
         token:token,
         user:user,
-        account:account.balance
+        account:account.balance,
+        details:test
     })
 
     return
@@ -147,7 +148,7 @@ router.put("/",authMiddleware,async (req,res)=>{
     })
 })
 
-router.get("/bulk",async (req,res)=>{
+router.get("/bulk", authMiddleware,async (req,res)=>{
     const filter = req.query.filter || "";
 
     const users = await User.find({
