@@ -1,5 +1,4 @@
 import React from 'react'
-
 function InputBox({label, placeholder, type}) {
   return (
     <div className="flex flex-col mb-3">
