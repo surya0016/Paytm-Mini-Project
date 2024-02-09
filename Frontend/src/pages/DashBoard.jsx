@@ -7,8 +7,8 @@ function DashBoard() {
   return (
     <div >
         <AppBar username={"Surya"}/>
-        <Balance amount={5000}/>
-        <Users friends={["Shubham","Jagdish","Anuj","Karan"]}/>
+        <Balance />
+        <Users />
     </div>
   )
 }

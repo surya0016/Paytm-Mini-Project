@@ -51,6 +51,7 @@ router.post("/signup" , async (req,res)=>{
         user.save();
         const userId = user._id;
 ///----------Create a new account--------->
+
         await Account.create({
             userId,
             balance:1 + Math.random()*10000
@@ -86,14 +87,10 @@ router.post("/signin",async(req,res)=>{
     }
 try {
     
-    const test = await User ;
     const user = await User.findOne({
         username:req.body.username,
     })
-    const account = await Account.findOne({
-        userId:user._id
-    })
-    // console.log(user);
+    
     const isMatch = await bcrypt.compare(req.body.password, user.password)
 
     if(!isMatch){
@@ -105,10 +102,7 @@ try {
     },secret);
 
     res.json({
-        token:token,
-        user:user,
-        account:account.balance,
-        details:test
+        token:token
     })
 
     return

@@ -5,12 +5,14 @@ import InputBox from '../components/auth-components/InputBox'
 import Button from '../components/auth-components/Button'
 import BottomWarn from '../components/auth-components/BottomWarn'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 function SignUp() {
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const navigate = useNavigate()
 
   return (
     <div className="flex justify-center items-center h-screen bg-zinc-50">
@@ -42,6 +44,9 @@ function SignUp() {
                 password              
               })
               localStorage.setItem("token",response.data.token)
+              if(await response.data.token){
+                navigate('/dashboard')
+              }
             }}/>
             <BottomWarn label={"Already have an account?"} btnText={"Login"} to={"/signin"}/>
         </div>

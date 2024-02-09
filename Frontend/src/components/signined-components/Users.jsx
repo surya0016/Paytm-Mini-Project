@@ -3,18 +3,14 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 function Users() {
-    const navigate = useNavigate()
-    const [users, setUsers] = useState([{
-        firstName:"Surya",
-        lastName:"Shankar",
-        _id:1,
-    }])
+    const [users, setUsers] = useState([])
     const [filter,setFilter] = useState("")
 
     useEffect(()=>{
         axios.get("http://localhost:4000/api/v1/user/bulk?filter="+filter)
         .then(response => setUsers(response.data.user))
-    })
+    },[filter])
+
   return (
     <div className=' m-3'>
         <div className='flex flex-col'>
@@ -30,6 +26,7 @@ function Users() {
 }
 
 const User = ({user}) => {
+    const navigate = useNavigate()
     return(
         <div className="flex justify-between items-center">
             <span>
@@ -37,7 +34,7 @@ const User = ({user}) => {
                 <span className='font-semibold'>{user.firstName} {user.lastName}</span>
             </span>
             <span> 
-                <button className='px-3 py-1.5 rounded-md text-white bg-black hover:bg-zinc-800' onClick={()=>navigate('/send')}>Send money</button>
+                <button className='px-3 py-1.5 rounded-md text-white bg-black hover:bg-zinc-800' onClick={()=>navigate('/send?id='+user._id+'&name='+user.firstName)}>Send money</button>
             </span>
         </div>
         )
