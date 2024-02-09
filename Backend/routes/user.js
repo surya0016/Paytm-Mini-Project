@@ -15,8 +15,8 @@ const zodSchema = z.object({
 
 const router = express.Router()
 
-router.get("/test",(req,res)=>{
-    res.send("Hello")
+router.get("/getusername",(req,res)=>{
+    res.send(req.body.username)
 })
 
 router.post("/signup" , async (req,res)=>{
@@ -142,7 +142,7 @@ router.put("/",authMiddleware,async (req,res)=>{
     })
 })
 
-router.get("/bulk", async (req,res)=>{
+router.get("/bulk", authMiddleware, async (req,res)=>{
     const filter = req.query.filter || "";
 
     const users = await User.find({
@@ -156,14 +156,28 @@ router.get("/bulk", async (req,res)=>{
             }
         }]
     })
+    
+    const appuser = await User.find({
+        _id:req.userId
+    })
+    const tests = users.filter((user)=>user._id!=req.userId)
 
+    // res.json({
+    //     user: users.map(user=>({
+    //         username:user.username,
+    //         firstName:user.firstName,
+    //         lastName:user.lastName,
+    //         _id:user._id,
+    //     }))
+    // })
     res.json({
-        user: users.map(user=>({
+        user:tests.map((user)=>({
             username:user.username,
             firstName:user.firstName,
             lastName:user.lastName,
             _id:user._id,
-        }))
+        })),
+        appuser:appuser[0].firstName,
     })
 })
 

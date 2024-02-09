@@ -33,6 +33,9 @@ function SendMoney() {
                   'Content-Type':'application/json'
                 }
               })
+              if((await response).data.message === "Transfer successful"){
+                setTimeout(navigate('/dashboard'),3000);
+              }
             }}>Initiate Transfer</button>
         </div>
     </div>
