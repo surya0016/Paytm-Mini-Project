@@ -23,8 +23,8 @@ function SignIn() {
                 username,
                 password
               })
-              localStorage.set("token",response.data.token)
-              if(response.data.msg === "User created successfully !"){
+              localStorage.setItem("token",response.data.token)
+              if(response.data.token){
                 navigate('/dashboard')
               }
             }}/>
